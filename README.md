@@ -2,8 +2,6 @@
 
 A countdown timer for personal use. Made while awaiting the return of Google's built-in timer that went down in summer 2022.
 
-In its current state, you may observe drift/slowness in the timer, since it uses JavaScript's `setTimeout`. Feel free to try it out if this is not a concern for your use case.
-
 Features:
 - Minimal UI
 - Similar time entry to Google's timer tool; for example, you can enter both '90s' and '1m 30s'.

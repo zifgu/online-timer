@@ -1,9 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import "./App.scss";
 
-/*
- */
-
 type TimeArray = [number, number, number, number, number, number];
 type TimerState = "edit" | "running" | "paused" | "elapsed";
 
@@ -115,10 +112,11 @@ function Timer() {
         }
     }, [timerState, remainingTime]);
 
+    const isZero = (t: TimeArray) => t.every((num) => num === 0);
 
     const handleStart = () => {
         const newTime = normalizeTime(time);
-        if (newTime) {
+        if (newTime && !isZero(newTime)) {
             setTime(newTime);
 
             const newRemainingTime = timeToSeconds(newTime);
@@ -178,7 +176,7 @@ function Timer() {
             </div>
             <div className="timer-buttons">
                 {timerState === "edit" && <button onClick={handleClear}>Clear</button>}
-                {timerState === "edit" && <button onClick={handleStart}>Start</button>}
+                {timerState === "edit" && <button onClick={handleStart} disabled={isZero(time)}>Start</button>}
                 {(timerState === "running"|| timerState === "paused") && <button onClick={handleStop}>Reset</button>}
                 {timerState === "running" && <button onClick={() => setTimerState("paused")}>Pause</button>}
                 {timerState === "paused" && <button onClick={() => setTimerState("running")}>Resume</button>}

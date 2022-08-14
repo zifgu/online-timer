@@ -50,12 +50,16 @@ $button-color: #249a7b;
             color: white;
             background-color: $button-color;
 
-            &:hover {
+            &:hover:enabled {
                 background-color: #187a63;
             }
 
             &:focus {
                 outline: rgba($button-color, 0.25) solid 4px;
+            }
+
+            &:disabled {
+                opacity: 70%;
             }
         }
     }

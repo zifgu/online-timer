@@ -100,17 +100,17 @@ function Timer() {
     return (
         <div className="timer-container">
             <audio src="./alarm.mp3" ref={alarm} loop></audio>
-            <div
+            <input
+                type="text"
+                size={11}
                 className="timer-text"
-                tabIndex={0}
                 onKeyDown={(event) => {
                     if (timerState === "edit") {
                         handleKey(event);
                     }
                 }}
-            >
-                {timeToString(displayTime)}
-            </div>
+                value={timeToString(displayTime)}
+            ></input>
             <div className="timer-buttons">
                 {timerState === "edit" && <button onClick={handleClear}>Clear</button>}
                 {timerState === "edit" && <button onClick={handleStart} disabled={isZero(time)}>Start</button>}

@@ -12,13 +12,16 @@ $button-color: #249a7b;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
 
     .timer-text {
-        padding: 0 0.5em;
+        padding: 0.15em;
+        text-align: center;
         font-size: 64px;
         background-color: #fafafa;
-        border-bottom: 4px solid #e7e8e8;
+
+        border-width: 0 0 4px 0;
+        border-style: solid;
+        border-color: #e7e8e8;
 
         &:focus {
             outline: none;

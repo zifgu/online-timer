@@ -4,78 +4,6 @@ import "./App.scss";
 type TimeArray = [number, number, number, number, number, number];
 type TimerState = "edit" | "running" | "paused" | "elapsed";
 
-function hmsToTime(hours: number, minutes: number, seconds: number): TimeArray {
-    return [
-        Math.floor(hours / 10),
-        hours % 10,
-        Math.floor(minutes / 10),
-        minutes % 10,
-        Math.floor (seconds / 10),
-        seconds % 10,
-    ];
-}
-
-function normalizeTime(time: TimeArray): TimeArray | null {
-    let seconds = parseInt(`${time[4]}${time[5]}`);
-    let minutes = parseInt(`${time[2]}${time[3]}`);
-    let hours = parseInt(`${time[0]}${time[1]}`);
-
-    if (seconds >= 60) {
-        minutes += Math.floor(seconds / 60);
-        seconds = seconds % 60;
-    }
-
-    if (minutes >= 60) {
-        hours += Math.floor(minutes / 60);
-        minutes = minutes % 60;
-    }
-
-    if (hours >= 100) {
-        alert("This time is too large! Please enter a smaller time");
-        return null;
-    }
-
-    return hmsToTime(hours, minutes, seconds);
-}
-
-function msToTime(milliseconds: number): TimeArray {
-    let rest = Math.ceil(milliseconds / 1000);
-    let seconds = rest % 60;
-
-    rest = Math.floor(rest / 60);
-    let minutes = rest % 60;
-
-    rest = Math.floor(rest / 60);
-    let hours = Math.min(rest, 99);
-
-    return hmsToTime(hours, minutes, seconds);
-}
-
-function timeToMs(time: TimeArray): number {
-    let seconds = parseInt(`${time[4]}${time[5]}`);
-    let minutes = parseInt(`${time[2]}${time[3]}`);
-    let hours = parseInt(`${time[0]}${time[1]}`);
-
-    return 1000 * (seconds + minutes * 60 + hours * 60 * 60);
-}
-
-function timeToString(time: TimeArray): string {
-    return `${time[0]}${time[1]}h ${time[2]}${time[3]}m ${time[4]}${time[5]}s`;
-}
-
-function msToString(milliseconds: number): string {
-    let rest = Math.ceil(milliseconds / 1000);
-    let seconds = String(rest % 60).padStart(2, '0');
-
-    rest = Math.floor(rest / 60);
-    let minutes = String(rest % 60).padStart(2, '0');
-
-    rest = Math.floor(rest / 60);
-    let hours = String(Math.min(rest, 99)).padStart(2, '0');
-
-    return `${hours}:${minutes}:${seconds}`;
-}
-
 function App() {
     return (
         <div className="app">
@@ -193,6 +121,78 @@ function Timer() {
             </div>
         </div>
     );
+}
+
+function hmsToTime(hours: number, minutes: number, seconds: number): TimeArray {
+    return [
+        Math.floor(hours / 10),
+        hours % 10,
+        Math.floor(minutes / 10),
+        minutes % 10,
+        Math.floor (seconds / 10),
+        seconds % 10,
+    ];
+}
+
+function normalizeTime(time: TimeArray): TimeArray | null {
+    let seconds = parseInt(`${time[4]}${time[5]}`);
+    let minutes = parseInt(`${time[2]}${time[3]}`);
+    let hours = parseInt(`${time[0]}${time[1]}`);
+
+    if (seconds >= 60) {
+        minutes += Math.floor(seconds / 60);
+        seconds = seconds % 60;
+    }
+
+    if (minutes >= 60) {
+        hours += Math.floor(minutes / 60);
+        minutes = minutes % 60;
+    }
+
+    if (hours >= 100) {
+        alert("This time is too large! Please enter a smaller time");
+        return null;
+    }
+
+    return hmsToTime(hours, minutes, seconds);
+}
+
+function msToTime(milliseconds: number): TimeArray {
+    let rest = Math.ceil(milliseconds / 1000);
+    let seconds = rest % 60;
+
+    rest = Math.floor(rest / 60);
+    let minutes = rest % 60;
+
+    rest = Math.floor(rest / 60);
+    let hours = Math.min(rest, 99);
+
+    return hmsToTime(hours, minutes, seconds);
+}
+
+function timeToMs(time: TimeArray): number {
+    let seconds = parseInt(`${time[4]}${time[5]}`);
+    let minutes = parseInt(`${time[2]}${time[3]}`);
+    let hours = parseInt(`${time[0]}${time[1]}`);
+
+    return 1000 * (seconds + minutes * 60 + hours * 60 * 60);
+}
+
+function timeToString(time: TimeArray): string {
+    return `${time[0]}${time[1]}h ${time[2]}${time[3]}m ${time[4]}${time[5]}s`;
+}
+
+function msToString(milliseconds: number): string {
+    let rest = Math.ceil(milliseconds / 1000);
+    let seconds = String(rest % 60).padStart(2, '0');
+
+    rest = Math.floor(rest / 60);
+    let minutes = String(rest % 60).padStart(2, '0');
+
+    rest = Math.floor(rest / 60);
+    let hours = String(Math.min(rest, 99)).padStart(2, '0');
+
+    return `${hours}:${minutes}:${seconds}`;
 }
 
 export default App;

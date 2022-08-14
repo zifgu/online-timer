@@ -109,6 +109,7 @@ function Timer() {
                         handleKey(event);
                     }
                 }}
+                readOnly={timerState !== "edit"}
                 value={timeToString(displayTime)}
             ></input>
             <div className="timer-buttons">

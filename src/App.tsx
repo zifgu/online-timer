@@ -38,8 +38,8 @@ function normalizeTime(time: TimeArray): TimeArray | null {
     return hmsToTime(hours, minutes, seconds);
 }
 
-function secondsToTime(totalSeconds: number): TimeArray {
-    let rest = totalSeconds;
+function msToTime(milliseconds: number): TimeArray {
+    let rest = Math.ceil(milliseconds / 1000);
     let seconds = rest % 60;
 
     rest = Math.floor(rest / 60);
@@ -51,20 +51,20 @@ function secondsToTime(totalSeconds: number): TimeArray {
     return hmsToTime(hours, minutes, seconds);
 }
 
-function timeToSeconds(time: TimeArray): number {
+function timeToMs(time: TimeArray): number {
     let seconds = parseInt(`${time[4]}${time[5]}`);
     let minutes = parseInt(`${time[2]}${time[3]}`);
     let hours = parseInt(`${time[0]}${time[1]}`);
 
-    return seconds + minutes * 60 + hours * 60 * 60;
+    return 1000 * (seconds + minutes * 60 + hours * 60 * 60);
 }
 
 function timeToString(time: TimeArray): string {
     return `${time[0]}${time[1]}h ${time[2]}${time[3]}m ${time[4]}${time[5]}s`;
 }
 
-function secondsToString(totalSeconds: number): string {
-    let rest = totalSeconds;
+function msToString(milliseconds: number): string {
+    let rest = Math.ceil(milliseconds / 1000);
     let seconds = String(rest % 60).padStart(2, '0');
 
     rest = Math.floor(rest / 60);
@@ -86,7 +86,8 @@ function App() {
 
 function Timer() {
     const [timerState, setTimerState] = useState<TimerState>("edit");
-    const [remainingTime, setRemainingTime] = useState<number>(0);  // In seconds
+    const [lastMeasuredTime, setLastMeasuredTime] = useState<number>(0);    // In milliseconds
+    const [remainingMs, setRemainingMs] = useState<number>(0);
     const [time, setTime] = useState<TimeArray>([0, 0, 0, 0, 0, 0]);
     const alarm = useRef<HTMLAudioElement>(null);
 
@@ -95,22 +96,24 @@ function Timer() {
     useEffect(() => {
         if (timerState !== "running") return;
 
-        if (remainingTime > 0) {
-            document.title = secondsToString(remainingTime);
+        if (remainingMs > 0) {
+            document.title = msToString(remainingMs);
 
-            const newRemainingTime = Math.max(0, remainingTime - 1);
-            const timer = setTimeout(
-                () => setRemainingTime(newRemainingTime),
-                1000
-            );
+            const timer = setTimeout(() => {
+                const elapsedMs = Date.now() - lastMeasuredTime;
+                setLastMeasuredTime(Date.now());
+
+                const newRemainingTime = Math.max(0, remainingMs - elapsedMs);
+                setRemainingMs(newRemainingTime);
+            }, 1000);
 
             return () => clearTimeout(timer);
-        } else if (remainingTime === 0) {
+        } else {
             alarm.current?.play();
             document.title = "Done";
             setTimerState("elapsed");
         }
-    }, [timerState, remainingTime]);
+    }, [timerState, remainingMs, lastMeasuredTime]);
 
     const isZero = (t: TimeArray) => t.every((num) => num === 0);
 
@@ -119,12 +122,18 @@ function Timer() {
         if (newTime && !isZero(newTime)) {
             setTime(newTime);
 
-            const newRemainingTime = timeToSeconds(newTime);
-            setRemainingTime(newRemainingTime);
-            document.title = secondsToString(newRemainingTime);
+            const newRemainingTime = timeToMs(newTime);
+            setRemainingMs(newRemainingTime);
+            document.title = msToString(newRemainingTime);
 
             setTimerState("running");
+            setLastMeasuredTime(Date.now());
         }
+    }
+
+    const handleResume = () => {
+        setTimerState("running");
+        setLastMeasuredTime(Date.now());
     }
 
     const handleKey = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -148,17 +157,17 @@ function Timer() {
 
     const handleClear = () => {
         setTime([0, 0, 0, 0, 0, 0]);
-        setRemainingTime(0);
+        setRemainingMs(0);
     };
 
     const handleStop = () => {
         stopAlarm();
         setTimerState("edit");
-        document.title = "JavaScript Timer";
-        setRemainingTime(timeToSeconds(time));
+        document.title = "Online Timer";
+        setRemainingMs(timeToMs(time));
     };
 
-    const displayTime = timerState === "edit" ? time : secondsToTime(remainingTime);
+    const displayTime = timerState === "edit" ? time : msToTime(remainingMs);
 
     return (
         <div className="timer-container">
@@ -179,7 +188,7 @@ function Timer() {
                 {timerState === "edit" && <button onClick={handleStart} disabled={isZero(time)}>Start</button>}
                 {(timerState === "running"|| timerState === "paused") && <button onClick={handleStop}>Reset</button>}
                 {timerState === "running" && <button onClick={() => setTimerState("paused")}>Pause</button>}
-                {timerState === "paused" && <button onClick={() => setTimerState("running")}>Resume</button>}
+                {timerState === "paused" && <button onClick={handleResume}>Resume</button>}
                 {timerState === "elapsed" && <button onClick={handleStop}>Done</button>}
             </div>
         </div>
